@@ -3,12 +3,14 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../cubits/login_cubit/states.dart';
+import 'package:scholar_chat/cubits/auth_cubit/auth_state.dart';
+
 import '../../components/show_snack_bar.dart';
 import '../../views/chat_view.dart';
 
-class LoginCubit extends Cubit<LoginStates> {
-  LoginCubit() : super(LoginInitialState());
+class AuthCubit extends Cubit<AuthStates> {
+  AuthCubit() : super(AuthInitialState());
+
 
   GlobalKey<FormState> formKey = GlobalKey();
   // this is the email coming from input field for email and so the password
@@ -64,4 +66,53 @@ class LoginCubit extends Cubit<LoginStates> {
       showSnackBar('Validation Error', context);
     }
   }
+
+
+
+
+registration(BuildContext context) async {
+    if (formKey.currentState!.validate()) {
+      isLoading = true;
+      emit(RegisterLoadingState());
+
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email!,
+          password: password!,
+        );
+
+        // This block should execute if login is successful.
+
+        isLoading = false;
+        emit(RegisterSuccessState());
+
+        Navigator.pushNamed(
+          context,
+          ChatView.id,
+          arguments: email,
+        );
+        log('Done');
+      } on FirebaseAuthException catch (ex) {
+        if (ex.code == 'weak-password') {
+          showSnackBar('The Password Provided is Too Weak', context);
+        } else if (ex.code == 'email-already-in-use') {
+          showSnackBar('The account already exists for that email.', context);
+        } else if (ex.code == 'invalid-email') {
+          showSnackBar('invalid email form ', context);
+        }
+
+        isLoading = false;
+        emit(RegisterFailureState(ex.code));
+      } catch (e) {
+        showSnackBar(e.toString(), context);
+
+        isLoading = false;
+        emit(RegisterFailureState(e.toString()));
+      }
+    } else {
+      showSnackBar('No validation ', context);
+    }
+  }
+
+
 }

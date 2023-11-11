@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:scholar_chat/views/chat_view.dart';
+import 'package:scholar_chat/blocs/auth_bloc/auth_bloc.dart';
+import 'package:scholar_chat/blocs/auth_bloc/auth_event.dart';
 import 'package:scholar_chat/views/resgister_view.dart';
 import 'package:scholar_chat/widgets/custom_buttons.dart';
 import 'package:scholar_chat/widgets/input_field.dart';
+import '../blocs/auth_bloc/auth_state.dart';
 import '../constants.dart';
-import '../cubits/login_cubit/login_cubit.dart';
-import '../cubits/login_cubit/states.dart';
+//import '../cubits/auth_cubit/auth_cubit.dart';
+// import '../cubits/auth_cubit/auth_state.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -15,10 +17,10 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    LoginCubit cubit = BlocProvider.of<LoginCubit>(context);
+    AuthBloc cubit = BlocProvider.of<AuthBloc>(context);
     return Form(
       key: cubit.formKey,
-      child: BlocBuilder<LoginCubit, LoginStates>(
+      child: BlocBuilder<AuthBloc, AuthStates>(
         builder: (context, state) {
           return ModalProgressHUD(
             inAsyncCall: cubit.isLoading,
@@ -77,7 +79,8 @@ class LoginView extends StatelessWidget {
                   LoginButton(
                     text: 'Sign In',
                     onPressed: () async {
-                      cubit.loginUser(context);
+                      cubit.add(LoginEvent(context: context));
+                      //cubit.add(LoginEvent(email: , password: password, context: context))
                     },
                   ),
                   Row(

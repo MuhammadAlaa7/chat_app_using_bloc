@@ -10,6 +10,13 @@ part 'chat_state.dart';
 class ChatCubit extends Cubit<ChatStates> {
   ChatCubit() : super(ChatInitialState());
 
+  @override
+  void onChange(Change<ChatStates> change) {
+    // TODO: implement onChange
+    super.onChange(change);
+    print('change is :: $change');
+  }
+
   final CollectionReference messagesCollectionReference =
       FirebaseFirestore.instance.collection('messages');
   final controller = TextEditingController();
@@ -36,10 +43,10 @@ class ChatCubit extends Cubit<ChatStates> {
         )
         .snapshots()
         .listen((event) {
-      messagesList.clear(); // to avoid duplication
+      messagesList
+          .clear(); // to avoid duplication  before getting the list data because the cubit is still alive
       for (var doc in event.docs) {
-        Map<String, dynamic> docJson = doc as Map<String, dynamic>;
-        messagesList.add(Message.fromJson(docJson));
+        messagesList.add(Message.fromJson(doc));
       }
 
       emit(ChatSuccessState());

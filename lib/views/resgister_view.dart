@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:scholar_chat/constants.dart';
-import 'package:scholar_chat/cubits/register_cubit/register_cubit.dart';
-import '../cubits/register_cubit/register_state.dart';
+import 'package:scholar_chat/cubits/auth_cubit/auth_cubit.dart';
+import 'package:scholar_chat/cubits/auth_cubit/auth_state.dart';
 import '../widgets/custom_buttons.dart';
 import '../widgets/input_field.dart';
 
@@ -13,10 +13,10 @@ class RegisterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    RegisterCubit cubit = BlocProvider.of<RegisterCubit>(context);
+    AuthCubit cubit = BlocProvider.of<AuthCubit>(context);
     return Form(
       key: cubit.formKey,
-      child: BlocBuilder<RegisterCubit, RegisterStates>(
+      child: BlocBuilder<AuthCubit, AuthStates>(
         builder: (context, state) {
           return ModalProgressHUD(
             inAsyncCall: cubit.isLoading,
